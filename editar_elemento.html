@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<title>Proyecto DIIA | Editar elemento</title>
+		<meta name="mobile-web-app-capable" content="yes">
+		<meta name="apple-mobile-web-app-capable" content="yes">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<script src="lib/jquery-3.2.1.min.js"></script>
+		<link href="https://fonts.googleapis.com/css?family=Open+Sans" rel="stylesheet">
+		<link href="style.css" rel="stylesheet">
+		<script src='tinymce/tinymce.min.js'></script>
+
+
+		<script>
+			var current_email = localStorage['email'] || sessionStorage['email']
+			var current_pass = localStorage['pass'] || sessionStorage['pass']
+
+			var id_elemento;
+
+			$(() => {
+
+				$('#agregar_archivo').click(agregar_archivo).css('cursor', 'pointer').css('cursor', 'hand')
+
+
+				var parametros = new URLSearchParams(window.location.search)
+				// parametros.has('ie')
+				// parametros.append('new','here').toString()
+
+				id_elemento = parametros.get('id')
+				
+				if (id_elemento) {
+					$.ajax({
+						type: 'POST',
+						format: 'json',
+						url: 'api/elementos.php?id=${id_elemento}`',
+						data: {
+							current_email: current_email, 
+							current_pass: current_pass, 
+							id: id_elemento, 
+							accion: 'consultar'},
+						success: function (elemento_json) {
+							if (!elemento_json.error) {
+								var id = elemento_json.id
+								var autor = elemento_json.autor
+								var titulo = elemento_json.titulo
+								var contenido = elemento_json.contenido
+								var tipo = elemento_json.tipo
+								var estado = elemento_json.estado
+								var publicado = elemento_json.publicado
+								var creado = elemento_json.creado
+
+								var tipos = tipo == 'noticia' ? 'noticias': tipo + 'es' 
+
+								$('input#titulo').val(titulo)
+
+								$('select#tipo').val(tipo);
+								$('select#tipo').find(`option[value="${tipo}"]`).prop("selected", true);
+
+								$('select#estado').val(estado);
+								$('select#estado').find(`option[value="${estado}"]`).prop("selected", true);
+
+								$('#detalles').html(`Creado por <a href="mailto:${autor}">${autor}</a> en ${creado}.`)
+								
+								$('textarea#contenido').text(contenido)
+							} else {
+								console.log(elemento_json.error)
+							}
+						},
+						error: function() {
+							console.log(`No se ha podido encontrar el elemento.`)
+						}
+					})
+				}
+
+				tinymce.init({
+				    selector: '#contenido',
+				    plugins: ['image', 'imagetools', 'advlist', 'code', 'media', 'link', 'colorpicker', 'paste', 'table', 'textcolor']
+				});
+			});
+
+			function agregar_archivo() {
+				let list_item = $('<li></li>').append($('<input class="archivo" type="file">').change(function (evt) {
+					list_item.text('subiendo archivo...')
+					var formData = new FormData()
+
+					var imagen_principal_files = $(evt.target)[0].files
+					if (imagen_principal_files.length > 0) {
+						var file = imagen_principal_files[0]
+						formData.append('archivo', file, file.name)
+					}
+
+					var xhr = new XMLHttpRequest();
+
+					xhr.open('POST', 'api/postFile.php', true);
+					xhr.onload = function () {
+						if (xhr.status === 200) {
+							var archivo_json = JSON.parse(xhr.response)
+							if (!archivo_json.error) {
+								list_item.empty().html(`Ruta del archivo: <a target="_blank" href="${archivo_json.url}">${archivo_json.url}</a> (<span style="cursor: pointer; cursor: hand;" onclick="copy('${archivo_json.url}'); $(this).text('Copied!');">Copiar a portapapeles</span>)`)
+								list_item.css('color', 'green')
+
+							} else {
+								list_item.css('color', 'red')
+								list_item.text('No se ha subir el archivo por un error de conexion.')
+							}
+						} else {
+							list_item.css('color', 'red')
+							list_item.text(archivo_json.error)
+						}
+					}
+
+					xhr.send(formData);
+				}))
+				$('#agregar_archivo').before(list_item.append(
+					$('<span>⨯<span>').click(evt => $(evt.target).parent().remove())
+					)
+				)
+			}
+
+			function copy(text) {
+				var input = document.createElement('input');
+				input.setAttribute('value', text);
+				document.body.appendChild(input);
+				input.select();
+				document.execCommand('copy');
+				document.body.removeChild(input)
+			}
+
+
+			function guardar() {
+
+				$('button#guardar').text('Guardando...')
+				
+				var formData = new FormData()
+
+				var imagen_principal_files = $('#imagen_principal')[0].files
+				if (imagen_principal_files.length > 0) {
+					var file = imagen_principal_files[0]
+					formData.append('imagen_principal', file, file.name)
+				}
+
+				for (var archivo_dom of $('.archivo')) {
+					if (archivo_dom.files.length > 0) {
+						var file = archivo_dom.files[0]
+						formData.append('archivo[]', file, file.name)
+					}
+				}
+
+				var titulo = $('#titulo').val()
+				var contenido = tinymce.activeEditor.getContent()
+				var tipo = $('#tipo').val()
+				var estado = $('#estado').val()
+
+				var accion = id_elemento? 'modificar' : 'agregar'
+
+				formData.append('id', id_elemento)
+				formData.append('current_email', current_email)
+				formData.append('current_pass', current_pass)
+				formData.append('titulo', titulo)
+				formData.append('contenido', contenido)
+				formData.append('tipo', tipo)
+				formData.append('estado', estado)
+				formData.append('accion', accion)
+
+
+				var xhr = new XMLHttpRequest();
+
+				xhr.open('POST', 'api/elementos.php', true);
+
+				xhr.onload = function (elemento_json) {
+					if (xhr.status === 200) {
+						var elemento_json = JSON.parse(xhr.response)
+						if (!elemento_json.error) {
+							$('button#guardar').text('Guardado')
+							var id = elemento_json.id
+							window.location = `elemento.html?id=${id}`
+						} else {
+							$('button#guardar').text('Guardar')
+							alert(elemento_json.error)
+						}
+					} else {
+						console.log(`No se ha podido crear el elemento.`)
+					}
+				}
+
+				xhr.send(formData);
+			}
+		</script>
+	</head>
+	<body>
+		<div class="main_container">
+			<h1>Nuevo/Editar Elemento</h1>
+			<a href="elementos.html" id="listado"><< Volver al listado</a><br>
+			<section>
+			<input id="titulo" placeholder="Ingresa el Título" style="margin-bottom: 10pt; font-size: xx-large; width: 100%; border: none; outline: none;"><br>
+				<div id="detalles"></div>
+				Tipo: 
+				<select id="tipo">
+					<option value="noticia">Noticia</option>
+					<option value="material">Material</option>
+					<option value="actividad">Actividad</option>
+				</select><br>
+				Estado: 
+				<select id="estado">
+					<option value="borrador">Borrador</option>
+					<option value="pendiente">Pendiente</option>
+					<option value="publicado">Publicado</option>
+					<option value="archivado">Archivado</option>
+				</select><br>
+				<div>Imagen principal: <input id="imagen_principal" type="file" accept="image/x-png,image/gif,image/jpeg"> <span style="color: gray;">(Preferentemente horizontal)</span></div>
+				<textarea id="contenido" placeholder="Contenido"></textarea><br>
+				<button id="guardar" onclick="guardar();">💾 Guardar elemento</button>
+			</section>
+			<section>
+				<h2>Repositorio de archivos/imágenes</h2>
+				<p>Agregue los archivos o imágenes para luego agregar al articulo a través del link.</p>
+				<ul>
+					<li id="agregar_archivo"><a>[+] Agregar un archivo</a></li>
+				</ul>
+			</section>
+			<a href="elementos.html" id="listado"><< Volver al listado</a><br>
+			<a href="index.html"><< Volver a la página principal</a>
+		</div>
+	</body>
+</html>

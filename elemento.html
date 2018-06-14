@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<title>Proyecto DIIA | Elemento</title>
+		<meta name="mobile-web-app-capable" content="yes">
+		<meta name="apple-mobile-web-app-capable" content="yes">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<link href="https://fonts.googleapis.com/css?family=Open+Sans" rel="stylesheet">
+
+		<link href="style.css" rel="stylesheet">
+		<script src="lib/jquery-3.2.1.min.js"></script>
+		<script src="lib/banner_remover.js"></script>
+		
+		<script>
+			var current_email = localStorage['email'] || sessionStorage['email']
+			var current_pass = localStorage['pass'] || sessionStorage['pass']
+
+			function parse_query_string() {
+			  var query = location.search.replace('?', '')
+			  var vars = query.split("&");
+			  var query_string = {};
+			  for (var i = 0; i < vars.length; i++) {
+			    var pair = vars[i].split("=");
+			    // If first entry with this name
+			    if (typeof query_string[pair[0]] === "undefined") {
+			      query_string[pair[0]] = decodeURIComponent(pair[1]);
+			      // If second entry with this name
+			    } else if (typeof query_string[pair[0]] === "string") {
+			      var arr = [query_string[pair[0]], decodeURIComponent(pair[1])];
+			      query_string[pair[0]] = arr;
+			      // If third or later entry with this name
+			    } else {
+			      query_string[pair[0]].push(decodeURIComponent(pair[1]));
+			    }
+			  }
+			  return query_string;
+			}
+
+			$(() => {
+
+				var parametros = parse_query_string()
+				var id_elemento = parametros.id
+				// parametros.has('ie')
+				// parametros.append('new','here').toString()
+				if(current_email) {
+					$('.solo_logeado').show()
+					$('#link_editar').prop('href', `editar_elemento.html?id=${id_elemento}`)
+				}
+
+				$.ajax({
+					type: 'POST',
+					format: 'json',
+					url: 'api/elementos.php?id=${id_elemento}`',
+					data: {current_email: current_email, current_pass: current_pass, id: id_elemento, accion: 'consultar'},
+					success: function (elemento_json) {
+						if (!elemento_json.error) {
+							var id = elemento_json.id
+							var autor = elemento_json.autor
+							var titulo = elemento_json.titulo
+							var contenido = elemento_json.contenido
+							var tipo = elemento_json.tipo
+							var estado = elemento_json.estado
+							var publicado = elemento_json.publicado
+							var creado = elemento_json.creado
+							var imagen_principal = elemento_json.imagen_principal
+
+							var tipos = tipo == 'noticia' ? 'noticias': tipo + 'es' 
+
+							$('#listado').text(`← Ir a ${tipos}`).prop('href', `elementos.html?tipo=${tipo}`)
+							if (imagen_principal) {
+								$('#imagen_principal').append(`<img style="max-width: 100%;" src="${imagen_principal}">`)
+							}
+
+							$('.noticia h1').text(titulo)
+							if (estado != 'publicado') {
+								$('#detalles').text(`Creada por ${autor}. Actualemente en estado ${estado}`)
+							}
+							$('div#contenido').html(elemento_json.contenido)
+						} else {
+							console.log(elemento_json.error)
+						}
+					},
+					error: function() {
+						console.log(`No se ha podido encontrar el elemento.`)
+					}
+				})
+			})
+
+			var login_colapsed = true
+			function login_panel () {
+				if(current_email) {
+					window.location = 'area_trabajo.html'
+				} else {
+					if (login_colapsed) {
+						$('#toggle_login').text('Cerrar panel ↑')
+						$('#login').show().find('#email').focus()
+						login_colapsed = false
+					} else {
+						$('#login').hide()
+						$('#toggle_login').text('Area de trabajo →')
+						login_colapsed = true	
+					}
+				}
+			}
+
+			$(() => {
+				$('#submit').click(() => {
+					var email = $('input#email').val().trim()
+					var pass = $('input#pass').val()
+					$.ajax({
+						type: "POST",
+						url: "api/usuarios.php",
+						dataType: "json",
+						data: {'email': email, 'pass': pass, accion: 'login'},
+						success: function (user_status) {
+							if (!user_status.error) {
+								if (user_status.rol != 'docente') {
+									if ($('input#mantener_sesion').prop('checked')) {
+										localStorage['email'] = email;
+										localStorage['pass'] = pass;
+										localStorage['rol'] = user_status.rol;
+									} else {
+										sessionStorage['email'] = email;
+										sessionStorage['pass'] = pass;
+										sessionStorage['rol'] = user_status.rol;
+									}
+									$('#login_error').empty()
+									window.location.replace("area_trabajo.html");
+								} else {
+									$('#login_error').html('Los docentes deben iniciar sesion en la <a href="plataforma/">Plataforma DIIA</a>')
+								}
+							} else {
+								$('#login_error').text(user_status.error)
+							}
+						},
+						error: function () {
+							$('#login_error').text("Hubo un error al conectarse con el servidor.")
+						}
+					})
+				})
+			})
+		</script>
+	</head>
+	<body>
+		<div id="login" style="display: none; padding-top: 10pt; padding-bottom: 10pt;width: 100%; background-color:white; color: black; border-bottom: 2px solid #b9b9b9; ">
+			<div class="main_container">
+				<div class="container-fluid">
+					<div class="row">
+						<div class="col-sm-4" style="margin:0pt; padding: 0pt;">
+							<input id="email" type="text" placeholder="email" style="padding-left: 5pt; width: 100%;  height: 30pt;border-color: #8e44ad;">
+							<p style="display: none; margin-top: 1pt;" id="setea_contrasenia">Nueva contrasenia (<a href="index.html">Cancelar</a>)</p>
+						</div>
+						<div class="col-sm-4" style="margin:0pt; padding: 0pt;">
+							<input id="pass" type="password" placeholder="password" style="padding-left: 5pt;  width: 100%; height: 30pt;border-color: #8e44ad;">
+						</div>
+						<div class="col-sm-4" style="margin:0pt; padding: 0pt;">
+							<button id="submit" style="background-color: #8e44ad; padding: 5pt 20pt; height: 30pt; border: none; margin-right: 5pt;">Ingresar</button>
+							<div style="display: inline-block;">
+								<input id="mantener_sesion" type="checkbox" style="transform: scale(1.5);" checked><label style="font-size: small; margin-left: 10pt; position: relative; bottom: 1pt;" for="mantener_sesion">Mantener sesion</label>
+							</div>
+						</div>
+					</div>
+					<div id='login_error' style="color: red;"></div>
+				</div>
+			</div>
+		</div>
+		<div class="main_container">
+			<img id="parallax_background" style="opacity: 0.3" src='img/graph.png'>
+			<section id="inicio" style="margin-bottom: 0pt;">
+				<a class="header-option" id="toggle_login" onclick="login_panel()">Área de trabajo →</a>
+				<a class="header-option" href="plataforma/">Plataforma DIIA →</a>
+				<a class="header-option" href="plataforma/#/consentimiento">Nota de consentimiento →</a>
+				<img class="logo" alt="Proyecto DIIA" style src="img/diia_vert.png">
+				<h2>Descubriendo&nbsp Interacciones&nbsp que&nbsp Impactan&nbsp en&nbsp el&nbsp Aprendizaje</h2>
+
+			</section>
+			<section class="noticia">
+			<div style="display: none;" class="solo_logeado">
+				<a style="float: right;" id="link_editar">editar →</a>
+			</div>
+			<div id='imagen_principal'></div>
+		<div id="tipo"></div>
+		<h1 style="margin-top: 20pt; font-size: xx-large;"></h1>
+		<div id="detalles"></div>
+		<div id="fecha"></div>
+		<div id="contenido"></div>
+		<br><br>
+		<a id="listado"></a><br>
+		<a href="index.html">← Ir a la pagina principal</a>
+		</section>
+		</div>
+		<footer style="background-color: black; padding-top: 10pt; color: white; height: 110pt;">
+			<div class="main_container">
+				<p class="apoya_financia">Apoya y financia:</p>
+				<a style="padding: 0pt;" href="http://www.anii.org.uy">
+					<img style="width: 200pt; display: block; " src="img/ANII_inverted.png">
+				</a>
+			</div>
+		</footer>
+	</body>
+</html>

@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<title>Proyecto DIIA | Login</title>
+		<meta name="mobile-web-app-capable" content="yes">
+		<meta name="apple-mobile-web-app-capable" content="yes">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+		<script src="lib/banner_remover.js"></script>
+
+		<script>
+			$(() => {
+				$('#submit').click(() => {
+					var email = $('input#email').val()
+					var pass = $('input#pass').val()
+					$.ajax({
+						type: "POST",
+						url: "api/usuarios.php",
+						dataType: "json",
+						data: {'email': email, 'pass': pass, accion: 'login'},
+						success: function (user_status) {
+							if (!user_status.error) {
+								if ($('input#mantener_sesion').prop('checked')) {
+									localStorage['email'] = email;
+									localStorage['pass'] = pass;
+									localStorage['rol'] = user_status.rol;
+								} else {
+									sessionStorage['email'] = email;
+									sessionStorage['pass'] = pass;
+									sessionStorage['rol'] = user_status.rol;
+								}
+								window.location.replace("area_trabajo.html");
+							} else {
+								alert(user_status.error)
+							}
+						},
+						error: function () {
+							alert('Hubo un error al conectarse con el servidor.')
+						}
+					})
+				})
+			})
+		</script>
+	</head>
+	<body>
+		<h1>Login</h1>
+		<p>Accede para ingresar al area de trabajo. Si no disponen de una cuenta puedes comunicarte a <a href="mailto:proyecto@diia.edu.uy">proyecto@diia.edu.uy</a> para pedir una nueva.</p>
+		<input id="email" type="text" placeholder="email"><br>
+		<input id="pass" type="password"><br>
+		<input id="mantener_sesion" type="checkbox" checked><label for="mantener_sesion">Manener sesion iniciada</label><br>
+		<button id="submit">Ingresar</button>
+	</body>
+</html>

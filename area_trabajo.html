@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<title>Proyecto DIIA | Área de Trabajo</title>
+		<meta name="mobile-web-app-capable" content="yes">
+		<meta name="apple-mobile-web-app-capable" content="yes">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+		<link href="https://fonts.googleapis.com/css?family=Open+Sans" rel="stylesheet">
+		<link href="style.css" rel="stylesheet">
+
+		
+		<script>
+			if (localStorage['email'] || sessionStorage['email']) {
+				var email = localStorage['email'] || sessionStorage['email']
+				var pass = localStorage['pass'] || sessionStorage['pass']
+			} else {
+				window.location.replace("index.html")
+			}
+
+			function logout() {
+				delete localStorage['email']
+				delete sessionStorage['email']
+				delete localStorage['pass']
+				delete sessionStorage['pass']
+				window.location.replace("index.html")
+			}
+
+			$(() => { 
+				if (localStorage['rol'] == 'administrador' || sessionStorage['rol'] == 'administrador') {
+					$('.solo_admin').show()
+				}
+			})
+		</script>
+	</head>
+	<body>
+		<div class="main_container">
+			<h1>Área de Trabajo*</h1>
+			<a href="index.html"><< Volver a la página principal</a>
+			<p class="highlated">*Solo miembros registrados tienen acceso a esta sección.</p>
+			<section>
+				<h2>Acciones posibles*</h2>
+				<ul>
+					<div class="solo_admin" style="display: none;">
+						<li><a href="usuarios.html">Gestión de usuarios</a></li>
+					</div>
+					<li><a href="elementos.html">Gestión de elementos (noticias, actividades y materiales)</a></li>
+					<li><a onclick="logout();" href="#">Cerrar sesión</a></li>
+					<p>*Las acciones posibles dependen del rol que se te ha sido asignado (Colaborador/Administrador)</p>
+				</ul>
+			</section>
+			<section>
+				<h2>Información útil</h2>
+				<ul>
+					<li>Heramienta de gestión de proyecto: <a href="http://www.diia.teamwork.com">Teamwork</a></li>
+					<li>Heramienta de gestión de bibliografía: <a href="http://www.mendeley.com">Mendeley</a></li>
+					<li>Repositorio central: <a href="https://drive.google.com/drive/folders/0B-zv5HCnHo-ERkVEMWVwNUNWeTA">Google Drive</a></li>
+					<li><a href="https://drive.google.com/open?id=1_IyOjdoNFvzpoMLEJykt6Dx4v3YwSLs7TAAj3WRKr-o">Directorio del equipo DIIA</a></li>
+				</ul>
+			</section>
+			<a href="index.html"><< Volver a la página principal</a>
+		</div>
+	</body>
+</html>

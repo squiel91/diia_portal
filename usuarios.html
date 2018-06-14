@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<title>Proyecto DIIA | Gestión de usuarios</title>
+		<meta name="mobile-web-app-capable" content="yes">
+		<meta name="apple-mobile-web-app-capable" content="yes">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<script src="lib/jquery-3.2.1.min.js"></script>
+		<link href="https://fonts.googleapis.com/css?family=Open+Sans" rel="stylesheet">
+		<link href="style.css" rel="stylesheet">
+		
+
+		<script>
+			var current_rol = localStorage['rol'] || sessionStorage['rol']
+			var current_email = localStorage['email'] || sessionStorage['email']
+			var current_pass = localStorage['pass'] || sessionStorage['pass']
+			if (current_email) {
+				if (current_rol != 'administrador') {
+					window.location.replace("area_trabajo.html")
+				}
+			} else {
+				window.location.replace("index.html")
+			}
+
+			var json_user_list = undefined
+			var usuarios_el = undefined
+
+			function encode_email_for_id(email) {
+				return email.replace('@', '_').replace('.', '_')
+			}
+
+			function validar_email(email) {
+				var re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+    			return re.test(email);
+			}
+
+			function nueva_linea() {
+				var agregar_el = $(`<button class="agregar">+ Agregar</button>`).click((evt) => {
+					var nuevo_usuario_el = $(evt.target).parent()
+					var email = nuevo_usuario_el.find('input.email').val()
+					var rol = nuevo_usuario_el.find('select.rol').val()
+					var id_docente = nuevo_usuario_el.find('input.id').val()
+					if (validar_email(email)) {
+						if (rol != 'docente' || id_docente) {
+							if (confirm(`¿Confirma que quiere agregar ${email} a los usuarios de DIIA? El usuario recibirá un email para elegir su contraseña.`)) {
+								$.ajax({
+									type: 'POST',
+									format: 'json',
+									url: 'api/usuarios.php',
+									data: {
+										current_email, 
+										current_pass, 
+										email, 
+										rol, 
+										id_docente,
+										accion: 'agregar' 
+									},
+									success: function (status) {
+										if (status.error) {
+											alert(`No se ha agregar ${email}. ` + status.error)
+										} else {
+											var email_id = encode_email_for_id(email)
+											nuevo_usuario_el.remove()
+											usuarios_el.append(
+												linea_usuario({email, rol, id_docente}),
+												nueva_linea()
+											)
+										}
+									},
+									error: function() {
+										alert(`No se ha agregar ${email}. Intente nuevamente.`)
+									}
+								})
+							}
+						} else {
+							alert('Se debe introducir un identificador válido.')
+						}
+					} else {
+						alert('El email introducido no válido.')
+					}
+				})
+
+				var id_el = $(`<input type="text" placeholder="Identificador" class="id">`).hide()
+
+				var select_type_el = $(`<select class="rol">
+						<option value="colaborador">Colaborador</option>
+						<option value="administrador">Administrador</option>
+						<option value="docente">Docente</option>
+					</select>`).change(function(evt) {
+						if ($(evt.target).val() == 'docente') {
+							id_el.show()
+						}  else {
+							id_el.hide()
+						}
+					})
+
+				return $(`<li class="new user_record">
+					<input class="email" type="text" placeholder="email">
+				</li>`).append(select_type_el, id_el, agregar_el)
+			}
+
+			function linea_usuario(json_user) {
+				var email = json_user.email
+				var email_id = encode_email_for_id(email)
+				var rol = json_user.rol
+				var id_docente = json_user.id_docente
+
+				editar_el = $(`<button class="eliminar">editar</button>`).click((evt) => {alert('Funcionalidad aún no implementada.')})
+				eliminar_el = $(`<button class="eliminar">⨯</button>`).data('email', email).click((evt) => {
+					var el = $(evt.target)
+					var email = el.data('email')
+					if(confirm(`¿Confirma que quiere eliminar a ${email} de los usuarios de DIIA? Esta acción no se puede deshacer.`)) {
+						$.ajax({
+							type: "POST",
+							url: "api/usuarios.php",
+							data: {current_email: current_email, current_pass: current_pass, accion: 'eliminar', email: email},
+							success: function () {
+								var email_id = encode_email_for_id(email)
+								$(`#linea_${email_id}`).remove()
+							},
+							error: function() {
+								alert(`No se ha podido eliminar ${email}.`)
+							}
+						})
+					}
+				})
+
+				var id_el = $(`<input type="text" value="${id_docente}" class="id" disabled>`)
+				if (rol != 'docente') {
+					id_el.hide()
+				}
+
+				var usuario_el = $(`<li class="user_record" id="linea_${email_id}">
+					<a class="email" href="mailto:${email}">${email}</a>
+					<select class="rol" disabled>
+						<option value="${rol}">${rol}</option>
+					</select>
+				</li>`).append(id_el, editar_el, eliminar_el)
+				return usuario_el
+			}
+
+			function populate(json_user_list) {
+				usuarios_el = $('#usuarios')
+				for (json_user of json_user_list) {
+					usuarios_el.append(
+						linea_usuario(json_user)
+					)
+				}
+				usuarios_el.append(nueva_linea())
+			}
+
+			$(() => {
+				$.ajax({
+					type: "POST",
+					url: "api/usuarios.php",
+					dataType: "json",
+					data: {current_email: current_email, current_pass: current_pass, 'accion': 'listar'},
+					success: function (data) {
+						json_user_list = data
+						populate(json_user_list)
+					}
+				})
+			})
+		</script>
+	</head>
+	<body>
+		<div class="main_container">
+			<h1>Gestión de Usuarios</h1>
+			<a href="area_trabajo.html"><< Volver al área de trabajo</a>
+			<section>
+			<ul id="usuarios">
+			</ul>
+			<p>Los cambios se guardar automáticamente</p>
+			</section>
+			<section>
+			<h2>Información adicional</h2>
+			<h3>Roles</h3>
+			<ul>
+				<li><strong>Administrador:</strong> igual que el colaborador pero puede también gestionar usuarios.</li>
+				<li><strong>Colaborador:</strong> puede acceder al área de trabajo, visualizar, escribir y editar posts.</li>
+				<li><strong>Docente:</strong> único rol que puede acceder a a plataforma DIIA. El identificador debe ser proporcionado y debe ser el mismo que lo identifica en la plataforma DIIA.</li>
+			</ul>
+			<h3>Alta y baja de usuario</h3>
+			<p>Se le enviará un email a los nuevos usuarios para que establezca su contraseña. Cuando se elimina un usuario este no es informado.</p>
+			<a href="area_trabajo.html"><< Volver al área de trabajo</a>
+		</section>
+		</div>
+	</body>
+</html>

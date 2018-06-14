@@ -1,0 +1,148 @@
+			body {
+				font-family: 'Open Sans', sans-serif;
+				font-size: medium;
+				color: #272727;
+				padding: 0pt;
+				margin: 0pt;
+			}
+
+			img.logo {
+				display: block;
+				margin-top: 25pt;
+    			margin-bottom: 25pt;
+			}
+
+			#parallax_background {
+				z-index: -1;
+				position: fixed;
+				top: 0pt;
+				left: 0pt;
+				opacity: 1;
+			}
+
+			.main_container {
+				max-width: 1000px;
+				margin: 0px auto;
+				padding-left: 10pt;
+				padding-right: 10pt; 
+			}
+
+			section {
+				margin-bottom: 40pt;
+				display: block;
+			}
+
+			h1 {
+				font-weight: bold;
+				font-size: 3em;
+				text-decoration: underline;
+			}
+
+			h2 {
+				font-weight: bold;
+				word-spacing: 0px;
+				margin-top: 0pt;
+    			font-size: 1.5em;
+    			display: inline;
+    			color: white;
+    			background-color: #8e44ad;
+    			padding-right: 30px;
+    			margin-bottom: 10pt;
+    			line-height: 30pt;
+			}
+			
+			p {
+				text-align: justify;
+				line-height: 22pt;
+				margin-top: 25pt;
+				background-color: rgba(255,255,255,0.6);
+			}
+
+			a {
+				color: #8e44ad;
+    			font-weight: bold;
+    			text-decoration: none;
+    			cursor: pointer; 
+    			cursor: hand;
+    			background-color: #d7bcdc;
+    			display: inline-block;
+    			margin: 2pt;
+    			padding: 3pt 3pt 3pt 0pt;
+			}
+
+			.header-option {
+				float: right;
+				clear: both;
+			}
+
+			.noticias {
+    			margin-top: 20pt;
+			}
+
+			.elemento {
+				margin-top: 20pt;
+				padding-left: 0pt;
+			}
+
+			.elemento h2 {
+			    position: relative;
+			    bottom: -3pt;
+			    margin-right: 5pt;
+			}
+
+			.elemento img {
+				width: 100%;
+			}
+
+			.elemento h1 {
+				font-size: medium;
+			    margin-top: 10pt;
+			    margin-bottom: 5pt;
+			}
+
+			.elemento p {
+				margin-top: 0pt;
+    			font-size: small;
+    			line-height: 15pt;
+			}
+
+			.participantes {
+				margin-top: 30pt;
+			}
+
+			#participantes .participante {
+				padding: 10pt;
+    			margin-bottom: 30pt;
+    			cursor: pointer; 
+    			cursor: hand;
+			} 
+
+			#participantes .participantes .participante img {
+				min-width: 25%;
+				max-width: 150px;
+				display: block;
+				margin: 0px auto;
+				height: 150px
+			}
+
+			#participantes .participantes .nombre {
+				font-size: normal;
+				font-weight: bold;
+				margin-top: 10pt;
+				text-align: center
+			}
+
+
+			.highlated {
+				font-weight: bold;
+				text-transform: uppercase;
+			}
+
+			#anni {
+				width: 140pt;
+			}
+
+			.apoya_financia {
+				font-size: small;
+				background-color: black
+			}

@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<title>Proyecto DIIA | Gestion de elementos</title>
+		<meta name="mobile-web-app-capable" content="yes">
+		<meta name="apple-mobile-web-app-capable" content="yes">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge">
+		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+		<link href="https://fonts.googleapis.com/css?family=Open+Sans" rel="stylesheet">
+
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<script src="lib/jquery-3.2.1.min.js"></script>
+		<script src="lib/banner_remover.js"></script>
+		
+
+  		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+
+		<link href="style.css" rel="stylesheet">
+
+		<style type="text/css">
+			select#tipo {
+			    font-size: xx-large;
+    			border: none;
+    			background-color: white;
+    			outline:none;
+    			font-weight: bold;
+    			position: relative;
+    			left: -5pt;
+			}
+		</style>
+
+		<script>
+			var current_rol = localStorage['rol'] || sessionStorage['rol']
+			var current_email = localStorage['email'] || sessionStorage['email']
+			var current_pass = localStorage['pass'] || sessionStorage['pass']
+
+			var json_element_list = undefined
+
+			var elementos_el = undefined
+			var tipo_el = undefined
+			var solo_publicados_el = undefined
+			var mostrar_archivados_el = undefined
+
+			function nuevo_elemento_el(elemento_json) {
+				var nuevo_elemento_el = $(`<div class="elemento col-sm-4">
+					<a style="display: block; text-align: center; margin: 0 auto;" href="editar_elemento.html"><img src="img/new_elem.png" style="width: 60pt"><br>Nuevo elemento</a>
+				</div>`)
+				return nuevo_elemento_el
+			}
+
+			function parse_query_string() {
+			  var query = location.search.replace('?', '')
+			  var vars = query.split("&");
+			  var query_string = {};
+			  for (var i = 0; i < vars.length; i++) {
+			    var pair = vars[i].split("=");
+			    // If first entry with this name
+			    if (typeof query_string[pair[0]] === "undefined") {
+			      query_string[pair[0]] = decodeURIComponent(pair[1]);
+			      // If second entry with this name
+			    } else if (typeof query_string[pair[0]] === "string") {
+			      var arr = [query_string[pair[0]], decodeURIComponent(pair[1])];
+			      query_string[pair[0]] = arr;
+			      // If third or later entry with this name
+			    } else {
+			      query_string[pair[0]].push(decodeURIComponent(pair[1]));
+			    }
+			  }
+			  return query_string;
+			}
+
+
+			function vacio_el(elemento_json) {
+				var vacio_el = $(`<div class="elemento col-sm-4">
+					<p">Aun no hay nada para compartir.</p>
+				</div>`)
+				return vacio_el
+			}
+
+			function elemento_el(elemento_json) {
+				var id = elemento_json.id
+				var titulo = elemento_json.titulo
+				var contenido =  elemento_json.contenido
+				var contenido_resumido = $('<div>' + contenido + '</div>').text().split('.')[0]
+
+
+				var elemento_el = $(`<div class="elemento col-sm-4"></div>`)
+				if (elemento_json.imagen_principal) {
+					elemento_el.append(`<img src="${elemento_json.imagen_principal}" style="width: 100%">`)
+				}
+				elemento_el.append(
+					$(`<h1>${titulo}</h1>`),
+					$(`<p class="contenido">${contenido_resumido} <a href="elemento.html?id=${id}">Ver mas →</a></p>`)
+				)
+				return elemento_el
+			}
+
+			function actualizar() {
+				elementos_el.empty()
+
+				elementos_DOM = []
+				if (current_email) {
+					elementos_DOM.push(nuevo_elemento_el())
+				}
+
+				var elements_json = filtrar(json_element_list)
+				for (elemento_json of elements_json) {
+					elementos_DOM.push(elemento_el(elemento_json))
+				}
+
+				if (elementos_DOM.length == 0) {
+					elementos_DOM.push(vacio_el())
+				}
+
+				var rows = []
+				var last_row;
+				for (var elemento_i = 0; elemento_i < elementos_DOM.length; elemento_i++) {
+					if (elemento_i % 3 == 0) {
+						last_row = $('<div class="row"></div>')
+						rows.push(last_row)
+					}
+					last_row.append(elementos_DOM[elemento_i])
+				}
+				elementos_el.append(rows)
+			}
+
+			function filtrar() {
+				var tipo = tipo_el.val()
+				var publicados = publicados_el.prop('checked')
+				var archivados = archivados_el.prop('checked')
+				var borradores = borradores_el.prop('checked')
+				var archivados = archivados_el.prop('checked')
+
+				json_element_filtered_list = []
+				for (json_element of json_element_list) {
+					if (tipo != 'todo' && json_element.tipo != tipo) {
+						continue
+					}
+
+					if (publicados && json_element.estado == 'publicado') {
+						json_element_filtered_list.push(json_element)
+						continue
+					}
+					if (archivados && json_element.estado == 'archivado') {
+						json_element_filtered_list.push(json_element)
+						continue
+					}
+					if (borradores && json_element.estado == 'borrador') {
+						json_element_filtered_list.push(json_element)
+						continue
+					}
+					if (archivados && json_element.estado == 'archivados') {
+						json_element_filtered_list.push(json_element)
+						continue
+					}
+				}
+				return json_element_filtered_list
+			}
+
+			var login_colapsed = true
+			function login_panel () {
+				if(current_email) {
+					window.location = 'area_trabajo.html'
+				} else {
+					if (login_colapsed) {
+						$('#toggle_login').text('Cerrar panel ↑')
+						$('#login').show().find('#email').focus()
+						login_colapsed = false
+					} else {
+						$('#login').hide()
+						$('#toggle_login').text('Area de trabajo →')
+						login_colapsed = true	
+					}
+				}
+			}
+
+			$(() => {
+				$('#submit').click(() => {
+					var email = $('input#email').val().trim()
+					var pass = $('input#pass').val()
+					$.ajax({
+						type: "POST",
+						url: "api/usuarios.php",
+						dataType: "json",
+						data: {'email': email, 'pass': pass, accion: 'login'},
+						success: function (user_status) {
+							if (!user_status.error) {
+								if (user_status.rol != 'docente') {
+									if ($('input#mantener_sesion').prop('checked')) {
+										localStorage['email'] = email;
+										localStorage['pass'] = pass;
+										localStorage['rol'] = user_status.rol;
+									} else {
+										sessionStorage['email'] = email;
+										sessionStorage['pass'] = pass;
+										sessionStorage['rol'] = user_status.rol;
+									}
+									$('#login_error').empty()
+									window.location.replace("area_trabajo.html");
+								} else {
+									$('#login_error').html('Los docentes deben iniciar sesion en la <a href="plataforma/">Plataforma DIIA</a>')
+								}
+							} else {
+								$('#login_error').text(user_status.error)
+							}
+						},
+						error: function () {
+							$('#login_error').text("Hubo un error al conectarse con el servidor.")
+						}
+					})
+				})
+
+				if (current_email) {
+					$('.solo_logeado').show()
+				}
+
+				elementos_el = $('div#elementos')
+				tipo_el = $('select#tipo').change(actualizar)
+				publicados_el = $('input#publicados').change(actualizar)
+				archivados_el = $('input#archivados').change(actualizar)
+				borradores_el = $('input#borradores').change(actualizar)
+				archivados_el = $('input#archivados').change(actualizar)
+
+				var parametros = parse_query_string()
+				var tipo = parametros.tipo
+
+				if (tipo) {
+					tipo_el.val(tipo);
+					tipo_el.find(`option[value="${tipo}"]`).prop("selected", true);
+				}
+
+				$.ajax({
+					type: 'POST',
+					format: 'json',
+					url: 'api/elementos.php',
+					data: {current_email: current_email, current_pass: current_pass, accion: 'listar'},
+					success: function (data) {
+						json_element_list = data
+						actualizar()
+					},
+					error: function() {
+						console.log(`No se ha podido conectar con el servidor.`)
+					}
+				})
+			})
+		</script>
+	</head>
+	<body>
+		<div id="login" style="display: none; padding-top: 10pt; padding-bottom: 10pt;width: 100%; background-color:white; color: black; border-bottom: 2px solid #b9b9b9; ">
+			<div class="main_container">
+				<div class="container-fluid">
+					<div class="row">
+						<div class="col-sm-4" style="margin:0pt; padding: 0pt;">
+							<input id="email" type="text" placeholder="email" style="padding-left: 5pt; width: 100%;  height: 30pt;border-color: #8e44ad;">
+							<p style="display: none; margin-top: 1pt;" id="setea_contrasenia">Nueva contrasenia (<a href="index.html">Cancelar</a>)</p>
+						</div>
+						<div class="col-sm-4" style="margin:0pt; padding: 0pt;">
+							<input id="pass" type="password" placeholder="password" style="padding-left: 5pt;  width: 100%; height: 30pt;border-color: #8e44ad;">
+						</div>
+						<div class="col-sm-4" style="margin:0pt; padding: 0pt;">
+							<button id="submit" style="background-color: #8e44ad; padding: 5pt 20pt; height: 30pt; border: none; margin-right: 5pt;">Ingresar</button>
+							<div style="display: inline-block;">
+								<input id="mantener_sesion" type="checkbox" style="transform: scale(1.5);" checked><label style="font-size: small; margin-left: 10pt; position: relative; bottom: 1pt;" for="mantener_sesion">Mantener sesion</label>
+							</div>
+						</div>
+					</div>
+					<div id='login_error' style="color: red;"></div>
+				</div>
+			</div>
+		</div>
+		<div class="main_container">
+			<img id="parallax_background" style="opacity: 0.3" src='img/graph.png'>
+			<section id="inicio" style="margin-bottom: 20pt">
+				<a class="header-option" id="toggle_login" onclick="login_panel()">Área de trabajo →</a>
+				<a class="header-option" href="plataforma/">Plataforma DIIA →</a>
+				<a class="header-option" href="plataforma/#/consentimiento">Nota de consentimiento →</a>
+				<img class="logo" alt="Proyecto DIIA" style src="img/diia_vert.png">
+				<h2>Descubriendo&nbsp Interacciones&nbsp que&nbsp Impactan&nbsp en&nbsp el&nbsp Aprendizaje</h2>
+
+			</section>
+			<section id="selection">
+			<select id="tipo">
+				<option value="noticia">Noticias</option>
+				<option value="actividad">Actividades</option>
+				<option value="material">Materiales</option>
+			</select>
+
+			<div class="solo_logeado filtros" style="display: none;">
+				<input type="checkbox" id="publicados" checked><label for="publicados">Publicados</label>
+				<input type="checkbox" id="archivados" checked><label for="archivados">Archivados</label>
+				<input type="checkbox" id="borradores" checked><label for="borradores">Borradores</label>
+				<input type="checkbox" id="archivados"><label for="archivados">Archivados</label>
+			</div>
+
+			<div id="elementos" class="container-fluid" style="margin-bottom: 50pt;">
+			</div>
+
+			<a href="index.html">← Ir a la pagina principal</a> 
+		</section>
+		</div>
+		<footer style="background-color: black; padding-top: 10pt; color: white; height: 110pt;">
+			<div class="main_container">
+				<p style="padding: 0pt;" class="apoya_financia">Apoya y financia:</p>
+				<a style="padding: 0pt;" href="http://www.anii.org.uy">
+					<img style="width: 200pt; display: block; " src="img/ANII_inverted.png">
+				</a>
+			</div>
+		</footer>
+	</body>
+</html>
+

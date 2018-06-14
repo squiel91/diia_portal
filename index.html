@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<meta name="mobile-web-app-capable" content="yes">
+		<meta name="apple-mobile-web-app-capable" content="yes">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+		<link href="https://fonts.googleapis.com/css?family=Open+Sans" rel="stylesheet">
+
+		<link href="style.css" rel="stylesheet">
+		<script src="lib/jquery-3.2.1.min.js"></script>
+		<script src="lib/banner_remover.js"></script>
+  		
+  		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<script src="script.js"></script>
+ 
+		<style>
+			.login_error {
+			    color: red;
+			    text-align: center;
+			    padding: 6pt;
+			}
+		</style>
+	</head>
+	<body>
+		<div id="login" style="display: none; padding-top: 10pt; padding-bottom: 10pt;width: 100%; background-color:white; color: black; border-bottom: 2px solid #b9b9b9; ">
+			<div class="main_container">
+				<div class="container-fluid">
+					<div class="row">
+						<div class="col-sm-4" style="margin:0pt; padding: 0pt;">
+							<input id="email" type="text" placeholder="email" style="padding-left: 5pt; width: 100%;  height: 30pt;border-color: #8e44ad;">
+							<p style="display: none; margin-top: 1pt;" id="setea_contrasenia">Nuevo usuario <a href="index.html">Cancelar</a></p>
+						</div>
+						<div class="col-sm-4" style="margin:0pt; padding: 0pt;">
+							<input id="pass" type="password" placeholder="password" style="padding-left: 5pt;  width: 100%; height: 30pt;border-color: #8e44ad;">
+						</div>
+						<div class="col-sm-4" style="margin:0pt; padding: 0pt;">
+							<button id="submit" style="background-color: #8e44ad; padding: 5pt 20pt; height: 30pt; border: none; margin-right: 5pt;">Setear contraseña</button>
+							<div style="display: inline-block;">
+								<input id="mantener_sesion" type="checkbox" style="transform: scale(1.5);" checked><label style="font-size: small; margin-left: 10pt; position: relative; bottom: 1pt;" for="mantener_sesion">Mantener sesión</label>
+							</div>
+						</div>
+					</div>
+					<div id='login_error' class="login_error"></div>
+				</div>
+			</div>
+		</div>
+		<div class="main_container">
+			<img id="parallax_background" src='img/graph.png'>
+			<section id="inicio">
+				<a class="header-option" id="toggle_login" onclick="login_panel()">Área de trabajo →</a>
+				<a class="header-option" href="plataforma/">Plataforma DIIA →</a>
+				<a class="header-option" href="plataforma/#/consentimiento">Nota de consentimiento →</a>
+				<img class="logo" alt="Proyecto DIIA" style src="img/diia_vert.png">
+				<h2>Descubriendo&nbsp Interacciones&nbsp que&nbsp Impactan&nbsp en&nbsp el&nbsp Aprendizaje</h2>
+
+				<p class="highlated">La propuesta que ofrece el proyecto DIIA es descubrir los patrones de interacción específicos del aprendizaje que ocurren en los entornos sociales, analizando interacciones entre los actores, estudiantes y docentes.</p>
+
+				<p>Los patrones son información crítica para la toma de decisiones a nivel de planeamiento institucional y para la detección de estudiantes en situaciones de riesgo, son además un insumo que apoya a los docentes en la toma de decisiones estratégicas para la mejora del desempeño académico de los estudiantes. La propuesta DIIA fortalece este uso de los datos brindando una plataforma eficaz de consulta de patrones y su análisis.</p>
+
+				<div style="display: none;" class="adicion_intro">
+					<p>Esta propuesta aporta al estado del arte en el tema “Social Learning Analytics” investigando algoritmos de detección de patrones con enfoques que contemplan el carácter semántico de las interacciones y los diversos contextos multiplataformas de participación de los estudiantes.</p>
+				</div>
+
+				<a class="ocultar_intro" onclick="toggle_intro()">Seguir leyendo →</a>
+
+
+				<div class="noticias container-fluid">
+				  <div class="row">
+				    <div id="noticias_disp" class="elemento col-sm-4"></div>
+				    <div id="actividades_disp" class="elemento col-sm-4"></div>
+					<div id="materiales_disp" class="elemento col-sm-4"></div>
+				  </div>
+				</div>
+			</section>
+			
+			<section id="participantes">
+				<h2>Participantes</h2>
+				<div class="participantes container-fluid">
+				  	<div class="row">
+					    <div class="participante col-sm-4" onclick="window.location = 'http://www.universidad.edu.uy/';">
+					      	<div class="logo">
+								<img src="img/UdelaR.png">
+							</div>
+							<div class="nombre">
+								Universidad de la República<br>Uruguay
+							</div>
+					    </div>
+					    <div class="participante col-sm-4" onclick="window.location = 'http://www.udlap.mx';">
+					      <div class="logo">
+								<img src="img/UDLAP.jpg">
+							</div>
+							<div class="nombre">
+								Universidad de las Américas<br>Puebla, México
+							</div>
+					    </div>
+					    <div class="participante col-sm-4" onclick="window.location = 'http://www.cerpsw.edu.uy/';">
+					      	<div class="logo">
+								<img src="img/CRP.png">
+							</div>
+							<div class="nombre">
+								CERP del Suroeste<br>Uruguay
+							</div>
+					    </div>
+				  	</div>
+				</div>
+				<a target="_blank" href="equipo.html">Ver todo el equipo →</a>
+			</section>
+
+			<section id="contacto">
+				<h2>Ponte&nbsp en&nbsp contacto</h2>
+				<p>Para comunicarte escribenos un email a la casilla <a href="mailto:proyecto@diia.edu.uy">proyecto@diia.edu.uy</a>.</p>
+			</section>
+		</div>
+		<footer style="background-color: black; padding-top: 10pt; color: white; height: 110pt;">
+			<div class="main_container">
+				<p class="apoya_financia">Apoya y financia:</p>
+				<a style="padding: 0pt;" href="http://www.anii.org.uy">
+					<img style="width: 200pt; display: block; " src="img/ANII_inverted.png">
+				</a>
+			</div>
+		</footer>
+	</body>
+</html>
+
