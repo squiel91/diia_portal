@@ -48,6 +48,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             while ($row = $result->fetch_array(MYSQLI_ASSOC)) {
                 $usuario = array(
                     'email' => $row['email'],
+                    'name' => $row['nombre'],
+                    'surname' => $row['apellido'],
                     'rol' => $row['rol'],
                     'id_docente' => $row['id_docente']
 
@@ -64,6 +66,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             $errors = false;
 
             $email = isset($_POST['email'])? $_POST['email'] : null;
+            $name = isset($_POST['name'])? $_POST['name'] : null;
+            $surname = isset($_POST['surname'])? $_POST['surname'] : null;
             $rol = isset($_POST['rol'])? $_POST['rol'] : null;
             $id_docente = isset($_POST['id_docente'])? $_POST['id_docente'] : null;
 
@@ -77,12 +81,12 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 $mensaje['error'] = 'Ya existe usuario con mismo email.';
             } else {
                 $seteo_pass = mt_rand(1000000,9999999);
-                $SQL = $db->prepare("INSERT INTO usuarios (email, rol, id_docente, seteo_pass) VALUES (?, ?, ?, ?)");
-                $SQL->bind_param('sssi', $email, $rol, $id_docente, $seteo_pass);
+                $SQL = $db->prepare("INSERT INTO usuarios (email, nombre, apellido, rol, id_docente, seteo_pass) VALUES (?, ?, ?, ?, ?, ?)");
+                $SQL->bind_param('sssssi', $email, $name, $surname, $rol, $id_docente, $seteo_pass);
                 $result = $SQL->execute();
                 if ($result) {
                     $mensaje['success'] = true;
-                    // mail($email , 'Setup de contraseña DIIA' , '<h1>Nuevo usuario plataforma DIIA</h1><p>Un administrador de <a href="http://diia.edu.uy">diia.edu.uy</a> te ha agregado como usuario de la web DIIA. Sigue el siguiente link para establecer tu nueva constraseña (o copia y pega esta dirección en tu navegador):</p><p><a href="https://diia.edu.uy?clave=' . $seteo_pass . '">https://diia.edu.uy?clave=' . $seteo_pass . '</a></p><p>Si crees que este email no es para ti hazle caso omiso o responde consultando sobre el mismo.</p><p>Atentamente, equipo de proyecto DIIA.</p>', "From: proyecto@diia.edu.uy\r\nMIME-Version: 1.0\r\nContent-Type: text/html; charset=UTF-8\r\n");
+                    mail($email , 'Setup de contraseña DIIA' , '<h1>Nuevo usuario plataforma DIIA</h1><p>Un administrador de <a href="http://diia.edu.uy">diia.edu.uy</a> te ha agregado como usuario de la web DIIA. Sigue el siguiente link para establecer tu nueva constraseña (o copia y pega esta dirección en tu navegador):</p><p><a href="https://diia.edu.uy?clave=' . $seteo_pass . '">https://diia.edu.uy?clave=' . $seteo_pass . '</a></p><p>Si crees que este email no es para ti hazle caso omiso o responde consultando sobre el mismo.</p><p>Atentamente, equipo de proyecto DIIA.</p>', "From: proyecto@diia.edu.uy\r\nMIME-Version: 1.0\r\nContent-Type: text/html; charset=UTF-8\r\n");
                 } else {
                     $mensaje['error'] = 'Error al ingresar al sistema.';
                 }

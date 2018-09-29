@@ -2,7 +2,7 @@
 <html lang="en">
 	<head>
 		<meta charset="utf-8">
-		<title>Proyecto DIIA | Gestion de elementos</title>
+		<title>Proyecto DIIA | Gestión de elementos</title>
 		<meta name="mobile-web-app-capable" content="yes">
 		<meta name="apple-mobile-web-app-capable" content="yes">
 		<meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -199,7 +199,7 @@
 									$('#login_error').empty()
 									window.location.replace("area_trabajo.html");
 								} else {
-									$('#login_error').html('Los docentes deben iniciar sesion en la <a href="plataforma/">Plataforma DIIA</a>')
+									$('#login_error').html('Los docentes deben iniciar sesión en la <a href="plataforma/">Plataforma DIIA</a>')
 								}
 							} else {
 								$('#login_error').text(user_status.error)
@@ -240,7 +240,7 @@
 						actualizar()
 					},
 					error: function() {
-						console.log(`No se ha podido conectar con el servidor.`)
+						console.log(`No se ha podido contactar con el servidor.`)
 					}
 				})
 			})
@@ -253,7 +253,7 @@
 					<div class="row">
 						<div class="col-sm-4" style="margin:0pt; padding: 0pt;">
 							<input id="email" type="text" placeholder="email" style="padding-left: 5pt; width: 100%;  height: 30pt;border-color: #8e44ad;">
-							<p style="display: none; margin-top: 1pt;" id="setea_contrasenia">Nueva contrasenia (<a href="index.html">Cancelar</a>)</p>
+							<p style="display: none; margin-top: 1pt;" id="setea_contrasenia">Nueva contraseña (<a href="index.html">Cancelar</a>)</p>
 						</div>
 						<div class="col-sm-4" style="margin:0pt; padding: 0pt;">
 							<input id="pass" type="password" placeholder="password" style="padding-left: 5pt;  width: 100%; height: 30pt;border-color: #8e44ad;">
@@ -261,7 +261,7 @@
 						<div class="col-sm-4" style="margin:0pt; padding: 0pt;">
 							<button id="submit" style="background-color: #8e44ad; padding: 5pt 20pt; height: 30pt; border: none; margin-right: 5pt;">Ingresar</button>
 							<div style="display: inline-block;">
-								<input id="mantener_sesion" type="checkbox" style="transform: scale(1.5);" checked><label style="font-size: small; margin-left: 10pt; position: relative; bottom: 1pt;" for="mantener_sesion">Mantener sesion</label>
+								<input id="mantener_sesion" type="checkbox" style="transform: scale(1.5);" checked><label style="font-size: small; margin-left: 10pt; position: relative; bottom: 1pt;" for="mantener_sesion">Mantener sesión</label>
 							</div>
 						</div>
 					</div>
@@ -275,8 +275,8 @@
 				<a class="header-option" id="toggle_login" onclick="login_panel()">Área de trabajo →</a>
 				<a class="header-option" href="plataforma/">Plataforma DIIA →</a>
 				<a class="header-option" href="plataforma/#/consentimiento">Nota de consentimiento →</a>
-				<img class="logo" alt="Proyecto DIIA" style src="img/diia_vert.png">
-				<h2>Descubriendo&nbsp Interacciones&nbsp que&nbsp Impactan&nbsp en&nbsp el&nbsp Aprendizaje</h2>
+				<img class="logo" alt="Proyecto DIIA" style="margin-bottom: 10pt; margin-top: 10pt; width: 112pt; margin-left: 20pt;" src="img/diia_vert.png">
+				<h2>Descubrimiento&nbsp de&nbsp Interacciones&nbsp que&nbsp Impactan&nbsp en&nbsp el&nbsp Aprendizaje</h2>
 
 			</section>
 			<section id="selection">

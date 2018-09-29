@@ -1,13 +1,17 @@
 <!DOCTYPE html>
 <html lang="en">
 	<head>
+		<title>Proyecto DIIA | Descubrimiento de Interacciones que Impactan en el Aprendizaje</title>
 		<meta charset="utf-8">
 		<meta name="mobile-web-app-capable" content="yes">
 		<meta name="apple-mobile-web-app-capable" content="yes">
+		<link rel="shortcut icon" href="/favicon.png" type="image/x-icon">
+		<link rel="icon" href="/favicon.png" type="image/x-icon">
 		<meta http-equiv="X-UA-Compatible" content="IE=edge">
 		<meta name="viewport" content="width=device-width, initial-scale=1">
 		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
 		<link href="https://fonts.googleapis.com/css?family=Open+Sans" rel="stylesheet">
+		<script type="text/javascript" src="https://addevent.com/libs/atc/1.6.1/atc.min.js" async defer></script>
 
 		<link href="style.css" rel="stylesheet">
 		<script src="lib/jquery-3.2.1.min.js"></script>
@@ -17,6 +21,24 @@
 		<script src="script.js"></script>
  
 		<style>
+			.destacado {
+				margin-top: 30pt;
+			}
+
+			.label_destacado {
+			    color: white;
+			    width: 90pt;
+			    border-radius: 4pt;
+			    margin-right: 10pt;
+			    display: inline-block;
+			    text-align: center;
+			    font-weight: bold;
+			    background-color: gray;
+			    padding: 2pt 12pt;
+			    position: relative;
+			    bottom: 2pt;
+			}
+
 			.login_error {
 			    color: red;
 			    text-align: center;
@@ -30,14 +52,14 @@
 				<div class="container-fluid">
 					<div class="row">
 						<div class="col-sm-4" style="margin:0pt; padding: 0pt;">
-							<input id="email" type="text" placeholder="email" style="padding-left: 5pt; width: 100%;  height: 30pt;border-color: #8e44ad;">
-							<p style="display: none; margin-top: 1pt;" id="setea_contrasenia">Nuevo usuario <a href="index.html">Cancelar</a></p>
+							<input id="email" type="text" placeholder="Email" style="padding-left: 5pt; width: 100%;  height: 30pt;border-color: #8e44ad;">
+							<p style="display: none; margin-top: 1pt;" id="setea_contrasenia"><strong>Nuevo usuario</strong> Ingrese su nueva contraseña<a href="index.html">Cancelar</a></p>
 						</div>
 						<div class="col-sm-4" style="margin:0pt; padding: 0pt;">
-							<input id="pass" type="password" placeholder="password" style="padding-left: 5pt;  width: 100%; height: 30pt;border-color: #8e44ad;">
+							<input id="pass" type="password" placeholder="Contraseña" style="padding-left: 5pt;  width: 100%; height: 30pt;border-color: #8e44ad;">
 						</div>
 						<div class="col-sm-4" style="margin:0pt; padding: 0pt;">
-							<button id="submit" style="background-color: #8e44ad; padding: 5pt 20pt; height: 30pt; border: none; margin-right: 5pt;">Setear contraseña</button>
+							<button id="submit" style="background-color: #8e44ad; padding: 5pt 20pt; height: 30pt; border: none; margin-right: 5pt;">Ingresar</button>
 							<div style="display: inline-block;">
 								<input id="mantener_sesion" type="checkbox" style="transform: scale(1.5);" checked><label style="font-size: small; margin-left: 10pt; position: relative; bottom: 1pt;" for="mantener_sesion">Mantener sesión</label>
 							</div>
@@ -53,8 +75,8 @@
 				<a class="header-option" id="toggle_login" onclick="login_panel()">Área de trabajo →</a>
 				<a class="header-option" href="plataforma/">Plataforma DIIA →</a>
 				<a class="header-option" href="plataforma/#/consentimiento">Nota de consentimiento →</a>
-				<img class="logo" alt="Proyecto DIIA" style src="img/diia_vert.png">
-				<h2>Descubriendo&nbsp Interacciones&nbsp que&nbsp Impactan&nbsp en&nbsp el&nbsp Aprendizaje</h2>
+				<img class="logo" style="margin-bottom: 10pt; margin-top: 10pt; width: 112pt; margin-left: 20pt;" alt="Proyecto DIIA" style src="img/diia_vert.png">
+				<h2>Descubrimiento&nbsp de&nbsp Interacciones&nbsp que&nbsp Impactan&nbsp en&nbsp el&nbsp Aprendizaje</h2>
 
 				<p class="highlated">La propuesta que ofrece el proyecto DIIA es descubrir los patrones de interacción específicos del aprendizaje que ocurren en los entornos sociales, analizando interacciones entre los actores, estudiantes y docentes.</p>
 
@@ -66,6 +88,32 @@
 
 				<a class="ocultar_intro" onclick="toggle_intro()">Seguir leyendo →</a>
 
+				<div class="destacado">
+					<h2>Taller sobre Detección de Interacciones que impactan en el Aprendizaje</h2>
+					<div class="label_destacado">DESTACADO</div>
+					<p>Tenemos el agrado de invitarlo al Taller sobre Detección de Interacciones que Impactan en el
+					Aprendizaje, Proyecto ANII-DIIA, a realizarse el <strong>jueves 20 de setiembre de 10:30hrs a 12:30hrs en la Sala
+					B12 del Aulario de la Facultad de Ingeniería</strong>, UdelaR.</p>
+
+					<p>Los temas a tratar son:</p>
+					<ul>
+						<li>Analíticas del Aprendizaje Social</li>
+						<li>Aspectos éticos y legales</li>
+						<li>Modelo de estudiantes desde una perspectiva psicológica y social</li>
+						<li>Métricas de análisis de interacciones y polaridad de los mensajes</li>
+						<li>Presentación de la herramienta DIIA para visualizar las interacciones en espacios virtuales de aprendizaje.</li>
+					</ul>
+					<p>Para participar de forma presencial o via web <strong>por favor completa el</strong> <a target="_blank" href="https://goo.gl/forms/2t6Zbd93B5le3jRs2">siguiente formulario</a>. Si deseas recibir un <strong>certificado de asistencia es necesario completarlo</strong> al menos 24 horas antes del comienzo del evento.
+					<div title="Add to Calendar" class="addeventatc" style="margin-top: 10pt;">
+					    Agregar a calendario
+					    <span class="start">09/20/2018 10:30 AM</span>
+					    <span class="end">09/20/2018 12:30 AM</span>
+					    <span class="title">Taller sobre Detección de Interacciones que impactan en el Aprendizaje</span>
+					    <span class="description">Exposición de Proyecto ANII-DIIA</span>
+					    <span class="organizer_email">proyecto@diia.edu.uy</span>
+					    <span class="location">Sala B12 del Aulario de la Facultad de Ingeniería, UdelaR</span>
+					</div>
+				</div>
 
 				<div class="noticias container-fluid">
 				  <div class="row">

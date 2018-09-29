@@ -10,7 +10,11 @@
 		<script src="lib/jquery-3.2.1.min.js"></script>
 		<link href="https://fonts.googleapis.com/css?family=Open+Sans" rel="stylesheet">
 		<link href="style.css" rel="stylesheet">
-		
+		<style>
+			input.name, input.surname, input.id {
+    			width: 60pt;
+			}
+		</style>
 
 		<script>
 			var current_rol = localStorage['rol'] || sessionStorage['rol']
@@ -40,6 +44,8 @@
 				var agregar_el = $(`<button class="agregar">+ Agregar</button>`).click((evt) => {
 					var nuevo_usuario_el = $(evt.target).parent()
 					var email = nuevo_usuario_el.find('input.email').val()
+					var name = nuevo_usuario_el.find('input.name').val()
+					var surname = nuevo_usuario_el.find('input.surname').val()
 					var rol = nuevo_usuario_el.find('select.rol').val()
 					var id_docente = nuevo_usuario_el.find('input.id').val()
 					if (validar_email(email)) {
@@ -52,7 +58,9 @@
 									data: {
 										current_email, 
 										current_pass, 
-										email, 
+										email,
+										name,
+										surname,
 										rol, 
 										id_docente,
 										accion: 'agregar' 
@@ -64,7 +72,7 @@
 											var email_id = encode_email_for_id(email)
 											nuevo_usuario_el.remove()
 											usuarios_el.append(
-												linea_usuario({email, rol, id_docente}),
+												linea_usuario({email, rol, id_docente, name, surname}),
 												nueva_linea()
 											)
 										}
@@ -98,12 +106,16 @@
 
 				return $(`<li class="new user_record">
 					<input class="email" type="text" placeholder="email">
+					<input class="name" type="text" placeholder="Nombre">
+					<input class="surname" type="text" placeholder="Apellido">					
 				</li>`).append(select_type_el, id_el, agregar_el)
 			}
 
 			function linea_usuario(json_user) {
 				var email = json_user.email
 				var email_id = encode_email_for_id(email)
+				var name = json_user.name
+				var surname = json_user.surname
 				var rol = json_user.rol
 				var id_docente = json_user.id_docente
 
@@ -134,6 +146,8 @@
 
 				var usuario_el = $(`<li class="user_record" id="linea_${email_id}">
 					<a class="email" href="mailto:${email}">${email}</a>
+					<input type="text" disabled class="name" value="${name}">
+					<input type="text" disabled class="surname" value="${surname}">
 					<select class="rol" disabled>
 						<option value="${rol}">${rol}</option>
 					</select>
@@ -172,7 +186,6 @@
 			<section>
 			<ul id="usuarios">
 			</ul>
-			<p>Los cambios se guardar automáticamente</p>
 			</section>
 			<section>
 			<h2>Información adicional</h2>
